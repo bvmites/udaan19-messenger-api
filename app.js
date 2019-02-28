@@ -1,10 +1,13 @@
 const express = require('express')
+const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
 const {MongoClient} = require('mongodb')
 var app = express()
 app.use(bodyParser.json())
+dotenv.config()
+// console.log(process.env.JWT_SECRET)
 const authenticate = require('./middleware/authenticate.js')
-// console.log(authenticate)
+
 MongoClient.connect('mongodb+srv://udaan18:udaan18@udaan18-dj1tc.mongodb.net/',(err,client)=>{
 	if (err) {
     	return console.log('Unable to connect to MongoDB server');
@@ -15,7 +18,7 @@ MongoClient.connect('mongodb+srv://udaan18:udaan18@udaan18-dj1tc.mongodb.net/',(
   	app.post('/admin/login',(req, res) => {
 	  	var body = req.body;
 	  	eventManagers.updateByCredentials(body.id,body.password).then((manager)=>{
-	  		console.log(manager)
+	  		// console.log(manager)
 	  		res.header('x-auth',manager.value.token).status(200).send({
 	  			msg: "You're logged in"
 	  		})

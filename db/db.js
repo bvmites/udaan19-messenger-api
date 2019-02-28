@@ -35,7 +35,7 @@ module.exports = (db) =>({
 			password : SHA256(pass+'Udaan19').toString()
 		},{
 			$set:{
-				token: jwt.sign({_id : id},'abc123').toString()
+				token: jwt.sign({_id : id},process.env.JWT_SECRET).toString()
 			}
 		},{
 			returnOriginal : false
