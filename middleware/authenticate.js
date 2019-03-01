@@ -9,6 +9,7 @@ module.exports = (req,res,next)=>{
 			decoded = jwt.verify(token,process.env.JWT_SECRET)
 			// console.log(decoded)
 			req.token = token
+			req._id = decoded._id
 	 		next()
 		} catch (e) {
 			return res.status(401).send({
