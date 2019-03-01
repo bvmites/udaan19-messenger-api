@@ -1,34 +1,8 @@
 const {MongoClient,ObjectID} = require('mongodb')
 const jwt = require('jsonwebtoken')
-const _ = require('lodash')
-// const bcrypt = require('bcryptjs')
 const {SHA256} = require('crypto-js')
 const httpRequest = require('request-promise-native')
 require('request')
-//  MongoClient.connect('mongodb+srv://udaan18:udaan18@udaan18-dj1tc.mongodb.net/',(err,client)=>{
-// 	if (err) {
-//     	return console.log('Unable to connect to MongoDB server');
-//   	}
-//   	console.log('Connected to MongoDB server');
-//   	var db=client.db('Udaan-19')
-//   	db.collection('events').find({}).toArray().then((docs)=>{
-//   		console.log(docs)
-//   		docs.forEach((doc)=>{
-//   			console.log(doc.eventName)
-//   			console.log(doc.managers)
-//   			doc.managers.forEach((manager)=>{
-//   				db.collection('eventManagers').insertOne({
-//   					_id : manager.phone,
-//   					name : manager.name,
-//   					password : SHA256(manager.phone+'Udaan19').toString(),
-//   					eventName : doc.eventName,
-//   				})
-//   			})
-//   		})
-//   	},(err)=>{
-//   		console.log(err)
-//   	})
-// })	
 
 module.exports = (db) =>({
 	login:(id,pass)=>{
@@ -73,7 +47,6 @@ module.exports = (db) =>({
 				Winner:contacts
 			}
 		}
-		console.log(myData)
 		return db.collection('events').updateOne({
 			eventName:event
 		},{
@@ -83,14 +56,10 @@ module.exports = (db) =>({
 		})
 	},
 	sendMessage:(contacts,message,eventID,response)=>{
-		// var success=[]
 		const sender = process.env.SMS_SENDER;
 		const apiKey = process.env.SMS_API_KEY;
 		const test = process.env.SMS_TEST === 'true';
-		const numbers = "7990839920,9913551362"
-		console.log(numbers)
-		// TODO Default message
-		// const message = `Dear Participant, Round ${round + 1} of ${eventName} is on ${date} ${time} at ${venue}. Kindly be present at the venue on time.`;
+		const numbers = contacts.join(",")
 		const apiRequest = {
 		    url: 'http://api.textlocal.in/send',
 		    form: {
@@ -106,60 +75,25 @@ module.exports = (db) =>({
 		httpRequest.post(apiRequest).then((res)=>{
 			result=JSON.parse(res)
 			var success=[]
-			console.log(result)
+			// console.log(result)
 			result.messages.forEach((message)=>{
 				success.push(message.recipient.toString().substring(2))
-				console.log(success)
+				// console.log(success)
 			})
 			if (result.status==="success") {
-				console.log("success")
+				// console.log("success")
 				response.status(200).send({success})
 			} else {
-				console.log("failure")
+				// console.log("failure")
 				response.status(400).send({failure:[]})
 			}
 			
 		}).catch((err)=>{
-			console.log(err)
+			// console.log(err)
 			response.status(400).send({
 				error:"Unable to connect to the TEXT LOCAL Server"
 			})
 		})
 		
 	}
-	// removeToken:(token)=>{
-	// 	// var decoded;
-	// 	// try{
-	// 	// 	decoded = jwt.verify(token,'abc123')
-	// 	// 	console.log(decoded)
-	// 	// } catch (e) {
-	// 	// 	return Promise.reject()
-	// 	// }
-	// 	// db.collection('eventManagers').findOne({
-	// 	// 	_id:decoded._id,
-	// 	// 	token
-	// 	// }).then((admin) => {
-	// 	//     if (!admin) {
-	// 	//       return Promise.reject();
-	// 	//     }
-	// 	//     console.log('\nyes\n')
-		    
-	// 	// }).catch((e) => {
-	// 	//     res.status(401).send();
-	// 	// });
-
-	// 	return db.collection('eventManagers').findOneAndUpdate({
-	// 		token
-	// 	},{
-	// 		$set:{
-	// 			token:null
-	// 		}
-	// 	},{
-	// 		returnOriginal: false
-	// 	})
-	// }
 })
-
-
-
-            
