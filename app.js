@@ -7,8 +7,10 @@ const {MongoClient} = require('mongodb')
 const dotenv = require('dotenv')
 dotenv.config()
 
+const port = process.env.PORT
+
 const router = require('./route/route.js')
-MongoClient.connect('mongodb+srv://udaan18:udaan18@udaan18-dj1tc.mongodb.net/',(err,client)=>{
+MongoClient.connect(process.env.MONGODB_URI,(err,client)=>{
 	if (err) {
     	return console.log('Unable to connect to MongoDB server');
   	}
@@ -16,4 +18,4 @@ MongoClient.connect('mongodb+srv://udaan18:udaan18@udaan18-dj1tc.mongodb.net/',(
   	var db=client.db('Udaan-19')
   	app.use('/',router(db))
 })
-app.listen(3000,()=>console.log('Connected to port 3000'))
+app.listen(port,()=>console.log(`Connected to port ${port}`))
