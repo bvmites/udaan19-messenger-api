@@ -31,5 +31,18 @@ module.exports = (db) => {
 			database.sendMessage(req.body.contacts,req.body.message,new ObjectID(req.body.eventID),res)
 		})
 	})
+
+	router.post('/addParticipant',authenticate,(req,res)=>{
+		try{
+			database.addParticipant(req.body)
+			res.status(200).send({
+				success:"Participant inserted"
+			})
+		} catch (e) {
+			console.log(e)
+			res.status(400).send(e)
+		}
+	})
+
 	return router
 }

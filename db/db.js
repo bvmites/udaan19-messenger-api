@@ -94,6 +94,16 @@ module.exports = (db) =>({
 				error:"Unable to connect to the TEXT LOCAL Server"
 			})
 		})
-		
+	},
+	addParticipant:(participant)=>{
+		var event = [{
+			rec_no:"abcxyz",
+			eventName:participant.event,
+			code:"123456",
+			round:0
+		}]
+		delete participant.event
+		participant.events=event
+		db.collection('participants').insertOne(participant)
 	}
 })
