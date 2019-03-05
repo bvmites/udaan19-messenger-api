@@ -7,9 +7,9 @@ module.exports = (db) => {
 	router.post('/admin/login',(req, res) => {
 		var body = req.body
 		database.login(body.id,body.password).then((manager)=>{
-		var token = jwt.sign({_id:manager._id},process.env.JWT_SECRET).toString()
+		var token = jwt.sign({id:manager.id},process.env.JWT_SECRET).toString()
 
-		res.header('x-auth',token).status(200).send({
+		res.header('Authorization',token).status(200).send({
 			msg: "You're logged in",
 			token
 			})
@@ -21,7 +21,7 @@ module.exports = (db) => {
 	})
 
 	router.post('/round',authenticate,(req,res)=>{
-		database.round(req._id).then((manager)=>{
+		database.round(req.id).then((manager)=>{
 			var event = manager.eventName
 			req.body.contacts.forEach((contact)=>{
 				database.findParticipantAndUpdateRound(event,contact).then((participant)=>{}).catch((err)=>console.log(err))
@@ -29,6 +29,11 @@ module.exports = (db) => {
 			database.addContacts(req.body.round,event,req.body.contacts).then((result)=>{}).catch((err)=>console.log(err))
 
 			database.sendMessage(req.body.contacts,req.body.message,new ObjectID(req.body.eventID),res)
+		}).catch((e)=>{
+			console.log(e.message)
+			res.status(400).send({
+				error:""
+			})
 		})
 	})
 

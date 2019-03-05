@@ -7,13 +7,13 @@ require('request')
 module.exports = (db) =>({
 	login:(id,pass)=>{
 		return db.collection('eventManagers').findOne({
-			_id : id,
-			password : SHA256(pass+'Udaan19').toString()
+			id,
+			password : SHA256(pass+process.env.SECRET).toString()
 		})
 	},
 	round:(id)=>{
 		return db.collection('eventManagers').findOne({
-			_id : id
+			id
 		})
 	},
 	findParticipantAndUpdateRound:(event,phone)=>{
