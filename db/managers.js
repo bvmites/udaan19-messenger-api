@@ -1,7 +1,7 @@
 const {MongoClient} = require('mongodb')
 const {SHA256} = require('crypto-js')
 
-MongoClient.connect(process.env.MONGODB_URI,(err,client)=>{
+MongoClient.connect(process.env.DB,(err,client)=>{
 	if (err) {
     	return console.log('Unable to connect to MongoDB server');
   	}

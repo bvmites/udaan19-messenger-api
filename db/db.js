@@ -1,8 +1,8 @@
-const {MongoClient,ObjectID} = require('mongodb')
-const jwt = require('jsonwebtoken')
-const {SHA256} = require('crypto-js')
-const httpRequest = require('request-promise-native')
-require('request')
+const {MongoClient,ObjectID} = require('mongodb');
+const jwt = require('jsonwebtoken');
+const {SHA256} = require('crypto-js');
+const httpRequest = require('request-promise-native');
+require('request');
 
 module.exports = (db) =>({
 	login:(id,pass)=>{
@@ -29,7 +29,7 @@ module.exports = (db) =>({
 		})
 	},
 	addContacts:(round,event,contacts)=>{
-		var myData
+		var myData;
 		if (round === 1) {
 			myData = {
 				round_1:contacts
@@ -59,7 +59,7 @@ module.exports = (db) =>({
 		const sender = process.env.SMS_SENDER;
 		const apiKey = process.env.SMS_API_KEY;
 		const test = process.env.SMS_TEST === 'true';
-		const numbers = contacts.join(",")
+		const numbers = contacts.join(",");
 		const apiRequest = {
 		    url: 'http://api.textlocal.in/send',
 		    form: {
@@ -73,13 +73,13 @@ module.exports = (db) =>({
 			}
 		};
 		httpRequest.post(apiRequest).then((res)=>{
-			result=JSON.parse(res)
-			var success=[]
+			result=JSON.parse(res);
+			var success=[];
 			// console.log(result)
 			result.messages.forEach((message)=>{
 				success.push(message.recipient.toString().substring(2))
 				// console.log(success)
-			})
+			});
 			if (result.status==="success") {
 				// console.log("success")
 				response.status(200).send({success})
@@ -96,14 +96,22 @@ module.exports = (db) =>({
 		})
 	},
 	addParticipant:(participant)=>{
-		var event = [{
-			rec_no:"abcxyz",
-			eventName:participant.event,
-			code:"123456",
-			round:0
-		}]
-		delete participant.event
-		participant.events=event
+		// var event = [{
+		// 	rec_no:"abcxyz",
+		// 	eventName:participant.event,
+		// 	code:"123456",
+		// 	round:0
+		// }];
+		// delete participant.event;
+		// participant.events=event;
 		db.collection('participants').insertOne(participant)
+	},
+	update: (participant) => {
+		    delete participant._id;
+
+		    return db.collection('participants').updateOne({phone: participant.phone}, {'$set': {...participant}}, {upsert: false});
+		    },
+	getParticipants: (phone) => {
+		return db.collection('participants').findOne({phone: phone});
 	}
-})
+});
