@@ -8,29 +8,74 @@ const ParticipantSchema = require('../schema/participant');
 const Validator = require('jsonschema').Validator;
 const validator = new Validator();
 
+const hashPassword = require('../utils/hashPassword');
 
 
 module.exports = (db) => {
 	const database = require('./../db/db.js')(db);
-	router.post('/admin/login',(req, res) => {
-		var body = req.body;
-		database.login(body.id,body.password).then((manager)=>{
-		var token = jwt.sign({id:manager.id},process.env.JWT_SECRET).toString()
 
-		res.header('Authorization',token).status(200).send({
-			msg: "You're logged in",
-			token
-			})
-		}).catch((e)=>{
-		  	res.status(400).send({
-		  		msg: "Invalid id or password"
-		  	})
-		})
+	//POST /create				for creating users
+	router.post('/create', async (request, response) => {
+		try {
+			const {username, password} = request.body;
+			const result = await database.create({username, password});
+			response.status(200).json({message: 'User created.'});
+		} catch (e) {
+			response.status(500).json({message: e.message});
+		}
+
+	});
+
+	// POST /login						for login
+	router.post('/login', async (request, response) => {
+		try {
+			const {username, password} = request.body;
+			const result = await database.get(username);
+			const error = new Error();
+			if (!(username && password)) {
+				error.message = 'Invalid request';
+				error.code = 'MissingCredentials';
+				throw error;
+			}
+
+			if (result === null) {
+				error.message = 'Invalid username or password';
+				error.code = 'UserDoesntExist';
+				throw error;
+			}
+
+			if (result.password.hash === hashPassword(password, result.password.salt, result.password.iterations)) {
+				const payload = {
+					user: {
+						username
+					}
+				};
+				const token = jwt.sign(payload, process.env.JWT_SECRET);
+				response.status(200).json({token});
+			}
+			else {
+				error.message = 'Invalid username or password';
+				error.code = 'InvalidCredentials';
+				throw error;
+			}
+		} catch (e) {
+			console.log(e);
+			if (e.code === 'MissingCredentials') {
+				response.status(400);
+			}
+			else if (e.code in ['UserDoesntExist', 'InvalidCredentials']) {
+				response.status(401);
+			}
+			else {
+				response.status(500);
+			}
+			response.json({message: e.message});
+		}
 	});
 
 	router.post('/round',authenticate,(req,res)=>{
 		database.round(req.id).then((manager)=>{
-			var event = manager.eventName;
+			var event = req.body.eventName;
 			req.body.contacts.forEach((contact)=>{
 				database.findParticipantAndUpdateRound(event,contact).then((participant)=>{}).catch((err)=>console.log(err))
 			});
@@ -44,6 +89,38 @@ module.exports = (db) => {
 			})
 		})
 	});
+
+	router.post('/attendance', authenticate, async (req, res)=>{
+
+		try{
+			let phones = req.body.contacts;
+			let eventName = req.body.eventName;
+			let round = req.body.theRound.toString();
+			// console.log(round);
+			let result = await database.getAttenddance(eventName).toArray();
+			console.log(result);
+			if(round === "1"){
+				phones.forEach(phone=>{
+					result[0].round_1.push(phone);
+				})
+			}else if(round === "2"){
+				phones.forEach(phone=>{
+					result[0].round_2.push(phone);
+				})
+			}else if(round === "3"){
+				phones.forEach(phone=>{
+					result[0].round_3.push(phone);
+				})
+			}
+			console.log(result[0]);
+			let answer = await database.setAttendance(result[0]);
+			// console.log(answer);
+			res.status(200).send({message:"attendance added"})
+
+		}catch (e) {
+			console.log(e.message)
+		}
+    });
 
 	router.post('/addParticipant',authenticate,(req,res)=>{
 		try{

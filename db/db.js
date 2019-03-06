@@ -4,13 +4,31 @@ const {SHA256} = require('crypto-js');
 const httpRequest = require('request-promise-native');
 require('request');
 
+const crypto = require('crypto');
+const hashPassword = require('../utils/hashPassword');
+
+
 module.exports = (db) =>({
-	login:(id,pass)=>{
-		return db.collection('eventManagers').findOne({
-			id,
-			password : SHA256(pass+process.env.SECRET).toString()
-		})
+
+	get: (username) => {
+		return db.collection('eventManagers').findOne({_id: username});
 	},
+	create: ({username, password}) => {
+		const salt = crypto.randomBytes(512).toString('hex');
+		const iterations = Math.floor((Math.random() * 500) + 500);
+		const hashedPassword = hashPassword(password, salt, iterations);
+		return db.collection('eventManagers').insertOne({
+			_id: username,
+			password: {
+				hash: hashedPassword,
+				salt,
+				iterations
+			}
+		});
+	},
+
+
+
 	round:(id)=>{
 		return db.collection('eventManagers').findOne({
 			id
@@ -96,14 +114,6 @@ module.exports = (db) =>({
 		})
 	},
 	addParticipant:(participant)=>{
-		// var event = [{
-		// 	rec_no:"abcxyz",
-		// 	eventName:participant.event,
-		// 	code:"123456",
-		// 	round:0
-		// }];
-		// delete participant.event;
-		// participant.events=event;
 		db.collection('participants').insertOne(participant)
 	},
 	update: (participant) => {
@@ -113,5 +123,12 @@ module.exports = (db) =>({
 		    },
 	getParticipants: (phone) => {
 		return db.collection('participants').findOne({phone: phone});
+	},
+	getAttenddance: (eventName)=>{
+		return db.collection('Event-Attendance').find({eventName:eventName});
+	},
+	setAttendance: (data) => {
+		delete data._id;
+		return db.collection('Event-Attendance').updateOne({eventName: data.eventName},{'$set': {...data}}, {upsert: false});
 	}
 });
