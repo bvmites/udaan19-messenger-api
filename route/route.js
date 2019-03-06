@@ -100,7 +100,7 @@ module.exports = (db) => {
 		try{
 			let phones = req.body.contacts;
 			let eventName = req.body.eventName;
-			let round = req.body.theRound;;
+			let round = req.body.theRound;
 			// console.log(round);
 			let result = await database.getAttenddance(eventName).toArray();
 			console.log(result);
