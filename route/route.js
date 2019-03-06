@@ -32,6 +32,8 @@ module.exports = (db) => {
 			const {username, password} = request.body;
 			const result = await database.get(username);
 			const error = new Error();
+
+			console.log(request.body);
 			if (!(username && password)) {
 				error.message = 'Invalid request';
 				error.code = 'MissingCredentials';
