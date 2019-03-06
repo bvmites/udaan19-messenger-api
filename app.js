@@ -1,7 +1,7 @@
 const express = require('express');
 var app = express();
 const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+
 const {MongoClient} = require('mongodb');
 let cors = require('cors');
 
@@ -9,6 +9,14 @@ app.use(cors());
 
 const dotenv = require('dotenv');
 dotenv.config();
+
+
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded());
+
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
 
 const port = process.env.PORT||3000;
 
@@ -22,4 +30,4 @@ MongoClient.connect(process.env.DB,{ useNewUrlParser:true },(err,client)=>{
   	var db=client.db('Udaan-19');
   	app.use('/',router(db))
 });
-app.listen(port,()=>console.log(`Connected to port ${port}`))
+app.listen(port,()=>console.log(`Connected to port ${port}`));
