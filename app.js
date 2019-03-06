@@ -3,6 +3,9 @@ var app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 const {MongoClient} = require('mongodb');
+let cors = require('cors');
+
+app.use(cors());
 
 const dotenv = require('dotenv');
 dotenv.config();
