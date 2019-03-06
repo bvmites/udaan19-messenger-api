@@ -1,5 +1,5 @@
 const router = require('express').Router();
-// const authenticate = require('./../middleware/authenticate.js');
+const authenticate = require('./../middleware/authenticate.js');
 const jwt = require('jsonwebtoken');
 const {ObjectID} = require('mongodb');
 
@@ -75,7 +75,7 @@ module.exports = (db) => {
 		}
 	});
 
-	router.post('/round',/*authenticate,*/(req,res)=>{
+	router.post('/round',authenticate,(req,res)=>{
 		// database.round(req.id).then((manager)=>{
 		try{
 			var event = req.body.eventName;
@@ -93,7 +93,7 @@ module.exports = (db) => {
 		}
 	});
 
-	router.post('/attendance',/* authenticate,*/ async (req, res)=>{
+	router.post('/attendance', authenticate, async (req, res)=>{
 
 		try{
 			let phones = req.body.contacts;
@@ -125,7 +125,7 @@ module.exports = (db) => {
 		}
     });
 
-	router.post('/addParticipant',/*authenticate,*/(req,res)=>{
+	router.post('/addParticipant',authenticate,(req,res)=>{
 		try{
 			database.addParticipant(req.body);
 			res.status(200).send({
@@ -137,7 +137,7 @@ module.exports = (db) => {
 		}
 	});
 
-	router.put('/update',/*authenticate,*/async (request, response) => {
+	router.put('/update',authenticate,async (request, response) => {
 		    try {
 		        const error = new Error();
 		        if (!validator.validate(request.body, ParticipantSchema).valid) {
@@ -165,7 +165,7 @@ module.exports = (db) => {
 		    }
 		});
 
-	router.post('/get',/*authenticate,*/ async (request, response)=>{
+	router.post('/get',authenticate, async (request, response)=>{
 		try{
 			const phone = request.body.phone;
 			const result = await database.getParticipants(phone);
@@ -175,7 +175,7 @@ module.exports = (db) => {
 		}
 	});
 
-	router.post('/getall', /*authenticate,*/ async (request,response)=>{
+	router.post('/getall', authenticate, async (request,response)=>{
 		try{
 			const phones = request.body.contacts;
 			let result = [];
