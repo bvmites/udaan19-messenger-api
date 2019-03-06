@@ -128,6 +128,8 @@ module.exports = (db) => {
     });
 
 	router.post('/addParticipant',/*authenticate,*/(req,res)=>{
+
+		console.log(req.body);
 		try{
 			database.addParticipant(req.body);
 			res.status(200).send({
