@@ -30,7 +30,7 @@ module.exports = (db) => {
 	router.post('/login', async (request, response) => {
 		try {
 
-			console.log(request);
+			console.log(request.body);
 			const {username, password} = request.body;
 			const result = await database.get(username);
 			const error = new Error();
