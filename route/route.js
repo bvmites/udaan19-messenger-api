@@ -74,7 +74,8 @@ module.exports = (db) => {
 	});
 
 	router.post('/round',authenticate,(req,res)=>{
-		database.round(req.id).then((manager)=>{
+		// database.round(req.id).then((manager)=>{
+		try{
 			var event = req.body.eventName;
 			req.body.contacts.forEach((contact)=>{
 				database.findParticipantAndUpdateRound(event,contact).then((participant)=>{}).catch((err)=>console.log(err))
@@ -82,12 +83,12 @@ module.exports = (db) => {
 			database.addContacts(req.body.round,event,req.body.contacts).then((result)=>{}).catch((err)=>console.log(err));
 
 			database.sendMessage(req.body.contacts,req.body.message,new ObjectID(req.body.eventID),res)
-		}).catch((e)=>{
+		}catch(e){
 			console.log(e.message);
 			res.status(400).send({
 				error:"unable to update round!"
 			})
-		})
+		}
 	});
 
 	router.post('/attendance', authenticate, async (req, res)=>{
@@ -169,6 +170,22 @@ module.exports = (db) => {
 			response.status(200).json(result);
 		}catch (e) {
 			response.status(500).json({message: e.message});
+		}
+	});
+
+	router.post('/getall', authenticate, async (request,response)=>{
+		try{
+			const phones = request.body.contacts;
+			let result = [];
+			let details = {};
+			for(let i=0; i<phones.length; i++){
+				details = await database.getParticipants(phones[i]);
+				result.push(details);
+			}
+			// console.log(result);
+			response.status(200).json({participants:result});
+		}catch (e) {
+			response.status(500).json({message:e.message});
 		}
 	});
 
