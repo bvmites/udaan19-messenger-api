@@ -29,6 +29,8 @@ module.exports = (db) => {
 	// POST /login						for login
 	router.post('/login', async (request, response) => {
 		try {
+
+			console.log(request);
 			const {username, password} = request.body;
 			const result = await database.get(username);
 			const error = new Error();
