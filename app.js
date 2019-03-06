@@ -9,10 +9,10 @@ app.use(cors());
 
 const dotenv = require('dotenv');
 dotenv.config();
-
-
+const logger = require('morgan');
+app.use(logger('dev'));
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded());
 
 app.use(bodyParser.urlencoded({
 	extended: true
