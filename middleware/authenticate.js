@@ -1,17 +1,12 @@
-const {MongoClient} = require('mongodb')
-const jwt = require('jsonwebtoken')
-module.exports = (req,res,next)=>{
-		var token = req.header('Authorization')
+const jwt = require('jsonwebtoken');
 
-		try{
-			var decoded = jwt.verify(token,process.env.JWT_SECRET)
-			// req.token = token
-			req.id = decoded.id
-	 		next()
-		} catch (e) {
-			return res.status(401).send({
-				error: "Unauthorized"
-			})
-		}
-}
-
+module.exports = (request, response, next) => {
+	try {
+		const token = request.header('Authorization');
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		request.user = decoded.user;
+		next();
+	} catch (e) {
+		response.status(401).json({message: 'unauthorized'});
+	}
+};
