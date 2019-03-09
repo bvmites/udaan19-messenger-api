@@ -103,7 +103,7 @@ module.exports = (db) => {
 			let round = req.body.theRound;
 			// console.log(round);
 			let result = await database.getAttenddance(eventName).toArray();
-			console.log(result);
+			// console.log(result);
 			if(round === "1"){
 				phones.forEach(phone=>{
 					result[0].round_1.push(phone);
