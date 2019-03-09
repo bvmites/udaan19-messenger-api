@@ -181,15 +181,16 @@ module.exports = (db) => {
 
 	router.post('/getall', authenticate,async (request,response)=>{
 		try{
-			const phones = request.body.contacts;
-			let result = [];
-			let details = {};
-			for(let i=0; i<phones.length; i++){
-				details = await database.getParticipants(phones[i]);
-				result.push(details);
-			}
-			// console.log(result);
-			response.status(200).json({participants:result});
+			// const phones = request.body.contacts;
+			let result = {};
+			let details = [];
+			details = await database.getParticipants();
+			details.forEach((d)=>{
+				let phone = d.phone;
+				result[phone] = d;
+			});
+			console.log(result);
+			response.status(200).json(result);
 		}catch (e) {
 			response.status(500).json({message:e.message});
 		}

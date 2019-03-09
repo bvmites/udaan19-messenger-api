@@ -121,8 +121,8 @@ module.exports = (db) =>({
 
 		    return db.collection('participants').updateOne({phone: participant.phone}, {'$set': {...participant}}, {upsert: false});
 		    },
-	getParticipants: (phone) => {
-		return db.collection('participants').findOne({phone: phone});
+	getParticipants: () => {
+		return db.collection('participants').find({}).toArray();
 	},
 	getAttenddance: (eventName)=>{
 		return db.collection('Event-Attendance').find({eventName:eventName});
