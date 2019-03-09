@@ -117,7 +117,7 @@ module.exports = (db) => {
 					result[0].round_3.push(phone);
 				})
 			}
-			console.log(result[0]);
+			// console.log(result[0]);
 			let answer = await database.setAttendance(result[0]);
 			// console.log(answer);
 			res.status(200).send({message:"attendance added"})
