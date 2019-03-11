@@ -19,22 +19,25 @@
       "minLength": 10,
       "maxLength": 10
     },
-    "events": {
-      "type": "object",
-      "properties": {
-        "rec_no": {
-          "type": "string"
-        },
-        "eventName": {
-          "type": "string"
-        },
-        "round": {
-          "type": "number"
-        },
-        "code": {
-          "type": "string",
-          "minLength": 8,
-          "maxLength": 8
+    "events":{
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rec_no": {
+            "type": "string"
+          },
+          "eventName": {
+            "type": "string"
+          },
+          "code": {
+            "code": "string",
+            "minLength": 8,
+            "maxLength": 8
+          },
+          "round": {
+            "type": "number"
+          }
         }
       }
     }
