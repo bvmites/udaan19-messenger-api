@@ -169,7 +169,7 @@ module.exports = (db) => {
 		    }
 		});
 
-	router.post('/get', authenticate,async (request, response)=>{
+	router.post('/get', /*authenticate,*/async (request, response)=>{
 		try{
 			const phone = request.body.phone;
 			const result = await database.getParticipants(phone);
